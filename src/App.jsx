@@ -10,7 +10,7 @@ export default class App extends React.Component {
             message: 'Loading...',
             appClass: 'is-dark',
             schedule: {
-                break: [50, 59],
+                break: [50, 60],
                 exceptions: [
                     {
                         hour: 12,
