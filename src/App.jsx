@@ -8,7 +8,16 @@ export default class App extends React.Component {
         this.state = {
             focusTime: false,
             message: 'Loading...',
-            appClass: 'is-dark'
+            appClass: 'is-dark',
+            schedule: {
+                break: [50, 59],
+                exceptions: [
+                    {
+                        hour: 12,
+                        break: [0, 59]
+                    },
+                ],
+            },
         };
         this.tick()
     }
@@ -21,6 +30,19 @@ export default class App extends React.Component {
         clearInterval(this.timerID)
     }
 
+    onBreak(now) {
+        let breakStart = this.state.schedule.break[0]
+        let breakEnd = this.state.schedule.break[1]
+        this.state.schedule.exceptions.forEach((e) => {
+            if (now.format('h') == e.hour) {
+                breakStart = e.break[0]
+                breakEnd = e.break[1]
+            }
+        })
+
+        return (now.format('m') >= breakStart && now.format('m') <= breakEnd) ? true : false
+    }
+
     tick() {
         const startTime = moment().startOf('hour')
         const endTime = moment().startOf('hour').add('hour', 1)
@@ -29,7 +51,8 @@ export default class App extends React.Component {
         const secondsDiff = endTime.diff(now, 'seconds')
         let message
         let appClass
-        if (minutesDiff < 10) {
+
+        if (this.onBreak(now)) {
             appClass = 'is-primary'
             message = 'Enagage with your co-workers!'
         } else {
@@ -52,6 +75,10 @@ export default class App extends React.Component {
     render() {
         return (
             <section className={this.outputClasses()}>
+                <nav className="navbar">
+                    <a className="navbar-item" href=""><i className="fas fa-cog"></i></a>
+                </nav>
+
                 <div className="hero-body has-text-centered">
                     <div className="container">
                         <h1 className="title is-size-1">{this.state.diff}</h1>
