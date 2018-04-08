@@ -14,12 +14,12 @@ export default class App extends React.Component {
                 exceptions: [
                     {
                         hour: 12,
-                        break: [0, 59]
-                    },
+                        break: [0, 60],
+                        message: 'Lunch Break!'
+                    }
                 ],
             },
         };
-        this.tick()
     }
 
     componentDidMount() {
@@ -30,35 +30,38 @@ export default class App extends React.Component {
         clearInterval(this.timerID)
     }
 
-    onBreak(now) {
-        let breakStart = this.state.schedule.break[0]
-        let breakEnd = this.state.schedule.break[1]
-        this.state.schedule.exceptions.forEach((e) => {
-            if (now.format('h') == e.hour) {
-                breakStart = e.break[0]
-                breakEnd = e.break[1]
-            }
-        })
-
-        return (now.format('m') >= breakStart && now.format('m') <= breakEnd) ? true : false
-    }
-
     tick() {
         const startTime = moment().startOf('hour')
-        const endTime = moment().startOf('hour').add('hour', 1)
+        const endTime = moment().startOf('hour').add(1, 'hour')
         const now = moment()
-        const minutesDiff = endTime.diff(now, 'minutes')
-        const secondsDiff = endTime.diff(now, 'seconds')
+        let minutesDiff = endTime.diff(now, 'minutes')
+        let secondsDiff = endTime.diff(now, 'seconds')
         let message
         let appClass
 
-        if (this.onBreak(now)) {
+        let breakStart = this.state.schedule.break[0]
+        let breakEnd = this.state.schedule.break[1]
+        this.state.schedule.exceptions.forEach((e) => {
+            if (parseInt(now.format('H')) === e.hour) {
+                breakStart = e.break[0]
+                breakEnd = e.break[1]
+                message = e.message
+            }
+        })
+
+        if ((now.format('m') >= breakStart && now.format('m') <= breakEnd)) {
             appClass = 'is-primary'
-            message = 'Enagage with your co-workers!'
+            message = message || 'Enagage with your co-workers!'
+            minutesDiff = moment().startOf('hour').minute(breakEnd).diff(now, 'minutes') 
+            secondsDiff = moment().startOf('hour').minute(breakEnd).diff(now, 'seconds') 
+
         } else {
             appClass = 'is-danger'
-            message = 'Focus Time!'
+            message = message || 'Focus Time!'
+            minutesDiff = moment().startOf('hour').minute(breakStart).diff(now, 'minutes') 
+            secondsDiff = moment().startOf('hour').minute(breakStart).diff(now, 'seconds') 
         }
+
         this.setState({
             start: startTime,
             end: endTime,
@@ -76,7 +79,7 @@ export default class App extends React.Component {
         return (
             <section className={this.outputClasses()}>
                 <nav className="navbar">
-                    <a className="navbar-item" href=""><i className="fas fa-cog"></i></a>
+                    <a className="navbar-item" href="/"><i className="fas fa-cog"></i></a>
                 </nav>
 
                 <div className="hero-body has-text-centered">
