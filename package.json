@@ -13,7 +13,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "deploy": "clear && echo '[*] Building...' && yarn build && echo '[*] Deploying...' && surge --domain cpave3-pomodoro.surge.sh --project ./build/",
+    "deploy": "clear && echo '[*] Building...' && yarn build && echo '[*] Deploying...' && surge --domain pomodoro.bytedriven.com --project ./build/",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   }
