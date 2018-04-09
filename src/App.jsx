@@ -1,7 +1,9 @@
-import React from 'react';
-import Clock from './Clock.jsx';
-import Message from './Message.jsx';
-import moment from 'moment';
+import React from 'react'
+import Clock from './Clock.jsx'
+import Message from './Message.jsx'
+import moment from 'moment'
+import Mossbyte from './mossbyte.js'
+import config from './config.js'
 export default class App extends React.Component {
     constructor(props) {
         super(props)
@@ -19,11 +21,18 @@ export default class App extends React.Component {
                     }
                 ],
             },
-        };
+        }
     }
 
     componentDidMount() {
-        this.timeID = setInterval(() => this.tick(), 1000);
+        this.timeID = setInterval(() => this.tick(), 1000)
+        const roomKey = this.props.match.params.key
+        this.setState({
+            mossbyte: new Mossbyte(roomKey, config.keys.app.public)
+        }, () => {
+            this.state.mossbyte.create(this.state.schedule)
+        })
+        setTimeout(() => console.log(`Key: ${this.state.mossbyte.keys.read}`), 2000)
     }
 
     componentWillUnmount() {
@@ -42,7 +51,7 @@ export default class App extends React.Component {
         let breakStart = this.state.schedule.break[0]
         let breakEnd = this.state.schedule.break[1]
         this.state.schedule.exceptions.forEach((e) => {
-            if (parseInt(now.format('H')) === e.hour) {
+            if (parseInt(now.format('H'), 10) === e.hour) {
                 breakStart = e.break[0]
                 breakEnd = e.break[1]
                 message = e.message
