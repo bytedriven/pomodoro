@@ -1,5 +1,6 @@
 import React from 'react'
 import Clock from './Clock.jsx'
+import Modal from './Modal.jsx'
 import Message from './Message.jsx'
 import moment from 'moment'
 import Mossbyte from './mossbyte.js'
@@ -10,6 +11,7 @@ export default class App extends React.Component {
     constructor(props) {
         super(props)
         this.state = {
+            showSettings: false,
             focusTime: false,
             message: 'Loading...',
             appClass: 'is-dark',
@@ -95,14 +97,18 @@ export default class App extends React.Component {
     }
 
     outputClasses() {
-        return `hero ${this.state.appClass} is-bold is-fullheight`
+        return `hero ${this.state.appClass} is-fullheight`
+    }
+
+    settingsClickHandler() {
+        this.setState({ showSettings: !this.state.showSettings })
     }
 
     render() {
         return (
             <section className={this.outputClasses()}>
                 <nav className="navbar">
-                    <a className="navbar-item" href="/"><i className="fas fa-cog"></i></a>
+                    <a className="navbar-item" onClick={() => this.settingsClickHandler()}><i className="fas fa-cog"></i></a>
                 </nav>
 
                 <div className="hero-body has-text-centered">
@@ -112,6 +118,11 @@ export default class App extends React.Component {
                         <Clock />
                     </div>
                 </div>
+                <Modal 
+                    show={this.state.showSettings}
+                    title='Settings'
+                    cancelOnClick={() => this.settingsClickHandler()}
+                />
             </section>
         )
     }
