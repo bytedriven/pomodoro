@@ -4,6 +4,8 @@ import axios from 'axios'
 const base_url = 'https://mossbyte.com/api/v1'
 
 export default class Mossbyte {
+
+    // TODO: Refactor this to be more generic
     constructor(stringKey, publicKey) {
         const stringRawRead = `com.bytedriven.pomodoro_${stringKey}_read`
         const stringRawAdmin = `com.bytedriven.pomodoro_${stringKey}_admin`
@@ -18,42 +20,79 @@ export default class Mossbyte {
     }
 
     create(objectPayload) {
-        let booleanReturn = false
-        const payload = {
-            object: objectPayload,
-            keys: {
-                read: [{
-                    label: `${this.keys.string}_read_pomodoro`,
-                    key: this.keys.read,
-                }],
-                admin: [{
-                    label: `${this.keys.string}_admin_pomodoro`,
-                    key: this.keys.admin,
-                }],
-            }
-        }
-        console.log(payload)
-        axios.post(`${base_url}/${this.keys.app.public}`, payload)
-        .then((response) => {
-        console.log('Response: ', response)
-            booleanReturn = response.status
+        return new Promise((resolve, reject) => {
+            // Build the payload
+            const payload = {
+                object: objectPayload,
+                keys: {
+                    read: [{
+                        label: `${this.keys.string}_read`,
+                        key: this.keys.read,
+                    }],
+                    admin: [{
+                        label: `${this.keys.string}_admin`,
+                        key: this.keys.admin,
+                    }],
+                }
+            }    
+            // Submit the payload
+            axios.post(`${base_url}/${this.keys.app.public}`, payload)
+            .then((response) => resolve(response.data))
+            .catch(err => reject)
         })
-        return booleanReturn
     }
 
-    select() {
-        //
+    select() { 
+        return new Promise((resolve, reject) => {
+            axios.get(`${base_url}/${this.keys.read}`)
+            .then((response) => resolve(response.data))
+            .catch(err => reject)
+        })
     }
 
-    selectRaw() {
-        //
+    selectRaw() { 
+        return new Promise((resolve, reject) => {
+            axios.get(`${base_url}/${this.keys.admin}`)
+            .then((response) => resolve(response.data))
+            .catch(err => reject)
+        })
     }
 
     update(objectPayload) {
-        //
+        return new Promise((resolve, reject) => {
+            axios.put(`${base_url}/${this.keys.admin}`, objectPayload)
+            .then((response) => resolve(response.data))
+            .catch(err => reject)
+        })
     }
 
     delete() {
-        //
+        return new Promise((resolve, reject) => {
+            axios.delete(`${base_url}/${this.keys.admin}`)
+            .then((response) => resolve(response.data))
+            .catch(err => reject)
+        })
+    }
+
+    /**
+     * Check to see if the requested mossbyte exists or not, and create it if it does not
+     * @objectPayload object - the data you want to save into the initial mossByte
+     * @return object - the returned mossByte after select/creation
+     */
+
+    findOrCreate(objectPayload) {
+        return new Promise((resolve, reject) => {
+            this.select()
+            .then((data) => {
+                if (data.status !== true) {
+                    // False, so the object doesn't exists
+                    this.create(objectPayload)
+                    .then(data => resolve)
+                    .catch(err => reject)
+                }
+                resolve(data)
+            })
+            .catch(err => reject)    
+        })
     }
 }
