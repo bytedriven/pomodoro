@@ -1,12 +1,13 @@
 import React from 'react'
 import Clock from './Clock.jsx'
+import MenuItem from './MenuItem.jsx'
 import Modal from './Modal.jsx'
 import Message from './Message.jsx'
 import moment from 'moment'
-import Mossbyte from './mossbyte.js'
-import config from './config.js'
-import audioBreak from './assets/break.wav'
-import audioFocus from './assets/focus.wav'
+import Mossbyte from '../mossbyte.js'
+import config from '../config.js'
+import audioBreak from '../assets/break.wav'
+import audioFocus from '../assets/focus.wav'
 export default class App extends React.Component {
     constructor(props) {
         super(props)
@@ -15,15 +16,17 @@ export default class App extends React.Component {
             focusTime: false,
             message: 'Loading...',
             appClass: 'is-dark',
-            schedule: {
-                break: [50, 60],
-                exceptions: [
-                    {
-                        hour: 12,
-                        break: [0, 60],
-                        message: 'Lunch Break!'
-                    }
-                ],
+            mossByte: {
+               object: {
+                   break: [50, 60],
+                    exceptions: [
+                        {
+                            hour: 12,
+                            break: [0, 60],
+                            message: 'Lunch Break!'
+                        }
+                    ],
+               } 
             },
             sounds: {
                 focus: new Audio(audioFocus),
@@ -36,13 +39,17 @@ export default class App extends React.Component {
         // TODO: once the timer starts, the loading disappears, we should try to get the mossbyte before then   
         const roomKey = this.props.match.params.key
         let mossbyte = new Mossbyte(roomKey, config.keys.app.public)
-        mossbyte.findOrCreate(this.state.schedule)
-        .then((response) => {
-            this.setState({
-                mossByte: response.data.mossByte
+        mossbyte.findOrCreate(this.state.mossByte.object)
+            .then((response) => {
+                this.setState({
+                    mossByte: response.data.mossByte
+                })
             })
-            this.timeID = setInterval(() => this.tick(), 1000)
-        })
+            .catch((err) => {
+                console.log(err)
+            })
+
+        this.timeID = setInterval(() => this.tick(), 1000)
     }
 
     componentWillUnmount() {
@@ -108,7 +115,7 @@ export default class App extends React.Component {
         return (
             <section className={this.outputClasses()}>
                 <nav className="navbar">
-                    <a className="navbar-item" onClick={() => this.settingsClickHandler()}><i className="fas fa-cog"></i></a>
+                    <MenuItem classes="fas fa-cog" onClick={() => this.settingsClickHandler()}/>
                 </nav>
 
                 <div className="hero-body has-text-centered">
@@ -122,6 +129,7 @@ export default class App extends React.Component {
                     show={this.state.showSettings}
                     title='Settings'
                     cancelOnClick={() => this.settingsClickHandler()}
+                    defaultRange={this.state.mossByte.object.break}
                 />
             </section>
         )

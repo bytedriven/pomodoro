@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import { HashRouter, Route, Switch } from 'react-router-dom'
 import 'bulma/css/bulma.css'
-import App from './App.jsx'
+import App from './components/App.jsx'
 import fontawesome from '@fortawesome/fontawesome'
 import fasCog from '@fortawesome/fontawesome-free-solid/faCog'
 
