@@ -8,6 +8,7 @@ import Mossbyte from '../mossbyte.js'
 import config from '../config.js'
 import audioBreak from '../assets/break.wav'
 import audioFocus from '../assets/focus.wav'
+
 export default class App extends React.Component {
     constructor(props) {
         super(props)
@@ -19,6 +20,10 @@ export default class App extends React.Component {
             mossByte: {
                object: {
                    break: [50, 60],
+                   messages: {
+                       focus: 'Focus Time!',
+                       break: 'Engage with your co-workers!',
+                   },
                     exceptions: [
                         {
                             hour: 12,
@@ -33,13 +38,15 @@ export default class App extends React.Component {
                 break: new Audio(audioBreak),
             },
         }
+        this.roomKey = this.props.match.params.key
+        this.mossbyte = new Mossbyte(this.roomKey, config.keys.app.public)
+
     }
 
     componentDidMount() {
         // TODO: once the timer starts, the loading disappears, we should try to get the mossbyte before then   
-        const roomKey = this.props.match.params.key
-        let mossbyte = new Mossbyte(roomKey, config.keys.app.public)
-        mossbyte.findOrCreate(this.state.mossByte.object)
+        this.timeID = setInterval(() => this.tick(), 1000)
+        this.mossbyte.findOrCreate(this.state.mossByte.object)
             .then((response) => {
                 this.setState({
                     mossByte: response.data.mossByte
@@ -48,12 +55,29 @@ export default class App extends React.Component {
             .catch((err) => {
                 console.log(err)
             })
-
-        this.timeID = setInterval(() => this.tick(), 1000)
     }
 
     componentWillUnmount() {
         clearInterval(this.timerID)
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        if (prevState.mossByte !== this.state.mossByte) {
+            console.log('fired')
+            console.log(prevState.mossByte, this.state.mossByte)
+            this.mossbyte.update({object: this.state.mossByte.object})
+        }
+    }
+
+    modalFunctions = {
+        rangeOnChange: (value) => {
+            const mb = {...this.state.mossByte}
+            mb.object.break = value
+            console.log('updated')
+            this.setState({
+                mossByte: mb
+            })
+        }
     }
 
     tick() {
@@ -80,7 +104,7 @@ export default class App extends React.Component {
                 this.state.sounds.break.play()
             }
             appClass = 'is-primary'
-            message = message || 'Enagage with your co-workers!'
+            message = message || this.state.mossByte.object.messages ? this.state.mossByte.object.messages.break : 'message.break'
             minutesDiff = moment().startOf('hour').minute(breakEnd).diff(now, 'minutes') 
             secondsDiff = moment().startOf('hour').minute(breakEnd).diff(now, 'seconds') 
 
@@ -89,7 +113,7 @@ export default class App extends React.Component {
                 this.state.sounds.focus.play()
             }
             appClass = 'is-danger'
-            message = message || 'Focus Time!'
+            message = message || this.state.mossByte.object.messages ? this.state.mossByte.object.messages.focus : 'message.focus'
             minutesDiff = moment().startOf('hour').minute(breakStart).diff(now, 'minutes') 
             secondsDiff = moment().startOf('hour').minute(breakStart).diff(now, 'seconds') 
         }
@@ -130,6 +154,8 @@ export default class App extends React.Component {
                     title='Settings'
                     cancelOnClick={() => this.settingsClickHandler()}
                     defaultRange={this.state.mossByte.object.break}
+                    modalFunctions={this.modalFunctions}
+                    message={this.state.mossByte.object.messages}
                 />
             </section>
         )

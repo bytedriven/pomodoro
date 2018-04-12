@@ -5,6 +5,13 @@ import 'rc-slider/assets/index.css'
 
 export default class Modal extends React.Component {
 
+    constructor(props) {
+        super(props)
+        this.state = {
+            modalFunctions: this.props.modalFunctions
+        }
+    }
+
     outputClasses() {
         return this.props.show ?
         'modal is-active' :
@@ -22,24 +29,24 @@ export default class Modal extends React.Component {
                 </header>
                 <section className="modal-card-body">
                     <FormElement 
-                        name="settings.break.start"
-                        displayName="Break start time"
-                        placeholder="0 - 60"
-                        type="number"
+                        displayName='Focus Message'
+                        name='message.focus'
+                        placeholder='Focus Message...'
+                        value={this.props.message ? this.props.message.focus : 'message.focus'}
                     />
                     <FormElement 
-                        name="settings.break.end"
-                        displayName="Break end time"
-                        placeholder="0 - 60"
-                        type="number"
+                        displayName='Break Message'
+                        name='message.break'
+                        placeholder='Break Message...'
+                        value={this.props.message ? this.props.message.break : 'message.break'}
                     />
-                   <div className="field">
+                   <div className="field" style={{overflow: 'hidden'}}>
                     <Range 
                         min={0} 
                         max={60} 
                         marks={({0: 0, 60:60})} 
                         defaultValue={this.props.defaultRange}
-                        onAfterChange={this.props.rangeOnChange}
+                        onAfterChange={evt => this.state.modalFunctions.rangeOnChange(evt)}
                     />
                    </div>
                 </section>

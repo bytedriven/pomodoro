@@ -12,7 +12,9 @@ export default class FormElement extends React.Component {
                 type={this.props.type || 'text'} 
                 id={this.props.name} 
                 name={this.props.name} 
-                placeholder={this.props.placeholder} />
+                placeholder={this.props.placeholder} 
+                value={this.props.value}    
+            />
           </div>
         </div>
         )
