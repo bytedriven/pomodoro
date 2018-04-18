@@ -2,6 +2,7 @@ import React from 'react'
 
 export default class FormElement extends React.Component {
 
+    // TODO: Fix onchnage
     render() {
         return(
         <div className="field">
@@ -13,7 +14,8 @@ export default class FormElement extends React.Component {
                 id={this.props.name} 
                 name={this.props.name} 
                 placeholder={this.props.placeholder} 
-                value={this.props.value}    
+                defaultValue={this.props.defaultValue}    
+                onChange={(e) => {this.props.onChange(e, this.props.name)}}
             />
           </div>
         </div>

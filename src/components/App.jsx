@@ -4,7 +4,7 @@ import MenuItem from './MenuItem.jsx'
 import Modal from './Modal.jsx'
 import Message from './Message.jsx'
 import moment from 'moment'
-import Mossbyte from '../mossbyte.js'
+//import Mossbyte from '../mossbyte.js'
 import config from '../config.js'
 import audioBreak from '../assets/break.wav'
 import audioFocus from '../assets/focus.wav'
@@ -39,45 +39,16 @@ export default class App extends React.Component {
             },
         }
         this.roomKey = this.props.match.params.key
-        this.mossbyte = new Mossbyte(this.roomKey, config.keys.app.public)
+        //this.mossbyte = new Mossbyte(this.roomKey, config.keys.app.public)
 
     }
 
     componentDidMount() {
-        // TODO: once the timer starts, the loading disappears, we should try to get the mossbyte before then   
         this.timeID = setInterval(() => this.tick(), 1000)
-        this.mossbyte.findOrCreate(this.state.mossByte.object)
-            .then((response) => {
-                this.setState({
-                    mossByte: response.data.mossByte
-                })
-            })
-            .catch((err) => {
-                console.log(err)
-            })
     }
 
     componentWillUnmount() {
         clearInterval(this.timerID)
-    }
-
-    componentDidUpdate(prevProps, prevState) {
-        if (prevState.mossByte !== this.state.mossByte) {
-            console.log('fired')
-            console.log(prevState.mossByte, this.state.mossByte)
-            this.mossbyte.update({object: this.state.mossByte.object})
-        }
-    }
-
-    modalFunctions = {
-        rangeOnChange: (value) => {
-            const mb = {...this.state.mossByte}
-            mb.object.break = value
-            console.log('updated')
-            this.setState({
-                mossByte: mb
-            })
-        }
     }
 
     tick() {
@@ -89,9 +60,9 @@ export default class App extends React.Component {
         let message
         let appClass
 
-        let breakStart = this.state.mossByte.object.break[0]
-        let breakEnd = this.state.mossByte.object.break[1]
-        this.state.mossByte.object.exceptions.forEach((e) => {
+        let breakStart = this.props.settings.breaks[0][0]
+        let breakEnd = this.props.settings.breaks[0][1]
+        this.props.exceptions.forEach((e) => {
             if (parseInt(now.format('H'), 10) === e.hour) {
                 breakStart = e.break[0]
                 breakEnd = e.break[1]
@@ -153,9 +124,6 @@ export default class App extends React.Component {
                     show={this.state.showSettings}
                     title='Settings'
                     cancelOnClick={() => this.settingsClickHandler()}
-                    defaultRange={this.state.mossByte.object.break}
-                    modalFunctions={this.modalFunctions}
-                    message={this.state.mossByte.object.messages}
                 />
             </section>
         )
