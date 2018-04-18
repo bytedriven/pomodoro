@@ -75,7 +75,7 @@ export default class App extends React.Component {
                 this.state.sounds.break.play()
             }
             appClass = 'is-primary'
-            message = message || this.state.mossByte.object.messages ? this.state.mossByte.object.messages.break : 'message.break'
+            message = message || this.props.settings.messages.break
             minutesDiff = moment().startOf('hour').minute(breakEnd).diff(now, 'minutes') 
             secondsDiff = moment().startOf('hour').minute(breakEnd).diff(now, 'seconds') 
 
@@ -84,7 +84,7 @@ export default class App extends React.Component {
                 this.state.sounds.focus.play()
             }
             appClass = 'is-danger'
-            message = message || this.state.mossByte.object.messages ? this.state.mossByte.object.messages.focus : 'message.focus'
+            message = message || this.props.settings.messages.focus
             minutesDiff = moment().startOf('hour').minute(breakStart).diff(now, 'minutes') 
             secondsDiff = moment().startOf('hour').minute(breakStart).diff(now, 'seconds') 
         }

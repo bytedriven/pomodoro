@@ -15,7 +15,6 @@ export default class FormElement extends React.Component {
                 name={this.props.name} 
                 placeholder={this.props.placeholder} 
                 defaultValue={this.props.defaultValue}    
-                onChange={(e) => {this.props.onChange(e, this.props.name)}}
             />
           </div>
         </div>

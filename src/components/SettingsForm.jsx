@@ -33,14 +33,12 @@ export default class SettingsForm extends Component {
                         name='message.focus'
                         placeholder='Focus Message...'
                         defaultValue={this.props.messages.focus}
-                        onChange={this.handleOnChange}
                     />
                     <FormElement 
                         displayName='Break Message'
                         name='message.break'
                         placeholder='Break Message...'
                         defaultValue={this.props.messages.break}
-                        onChange={this.handleOnChange}
                     />
                     <div className="field" style={{overflow: 'hidden'}}>
                         <Range
