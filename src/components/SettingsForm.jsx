@@ -24,6 +24,14 @@ export default class SettingsForm extends Component {
         this.props.onSubmit({...this.state})
     }
 
+    handleOnChange = (e) => {
+        this.setState({
+            breaks: [
+                e
+            ]
+        })
+    }
+
     render() {
         return (
             <form onSubmit={e => this.handleOnSubmit(e)}>
@@ -47,6 +55,7 @@ export default class SettingsForm extends Component {
                             max={60} 
                             marks={({0: 0, 60:60})} 
                             defaultValue={this.props.breaks[0]}
+                            onAfterChange={evt => this.handleOnChange(evt)}
                         />
                     </div>        
                 </section>
