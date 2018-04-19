@@ -4,8 +4,6 @@ import MenuItem from './MenuItem.jsx'
 import Modal from './Modal.jsx'
 import Message from './Message.jsx'
 import moment from 'moment'
-//import Mossbyte from '../mossbyte.js'
-import config from '../config.js'
 import audioBreak from '../assets/break.wav'
 import audioFocus from '../assets/focus.wav'
 
